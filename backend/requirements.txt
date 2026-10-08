@@ -1,0 +1,36 @@
+# Smart Attendance Management System - Backend & AI Dependencies
+
+# FastAPI Framework & Server
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+python-multipart>=0.0.9
+websockets>=12.0
+
+# Database & Persistence
+pymongo>=4.6.0
+mongomock>=4.1.2
+
+# Face Recognition & Deep Learning
+torch>=2.0.0
+torchvision>=0.15.0
+facenet-pytorch>=2.5.3
+opencv-python>=4.8.0
+pillow>=10.0.0
+numpy>=1.24.0
+scipy>=1.11.0
+
+# Security & Authentication
+bcrypt>=4.0.0
+pyjwt>=2.8.0
+
+# Data Validation & Environment
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+
+# Reports & Excel Export
+pandas>=2.0.0
+openpyxl>=3.1.0
+
+# HTTP Client
+requests>=2.31.0
+httpx>=0.27.0
