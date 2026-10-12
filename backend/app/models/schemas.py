@@ -14,7 +14,7 @@ class TokenResponse(BaseModel):
 
 class AdminCreate(BaseModel):
     name: str
-    email: EmailStr
+    email: str
     password: str
     role: str = "Admin"
 
