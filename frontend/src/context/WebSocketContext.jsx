@@ -51,7 +51,7 @@ export const WebSocketProvider = ({ children }) => {
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.port === '5173' ? 'localhost:8000' : window.location.host;
-    const wsUrl = `${protocol}//${host}/ws`;
+    const wsUrl = import.meta.env.VITE_WS_URL || `${protocol}//${host}/ws`;
 
     try {
       const ws = new WebSocket(wsUrl);
