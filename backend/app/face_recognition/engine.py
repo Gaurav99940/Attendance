@@ -20,27 +20,46 @@ class FaceRecognitionEngine:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         logger.info(f"Initializing Face Recognition Engine on device: {self.device}")
         
-        # 1. Load FaceNet InceptionResnetV1 model for 512-D biometric embeddings
-        try:
-            self.model = InceptionResnetV1(pretrained='vggface2').eval().to(self.device)
-            logger.info("FaceNet InceptionResnetV1 model loaded successfully.")
-        except Exception as e:
-            logger.error(f"Failed to load FaceNet model: {e}")
-            self.model = None
+        torch.set_num_threads(1)
+        torch.set_grad_enabled(False)
+        self._model = None
+        self._mtcnn = None
 
-        # 2. MTCNN detector for high precision bounding box extraction and landmarks
-        try:
-            self.mtcnn = MTCNN(
-                keep_all=True,
-                device=self.device,
-                min_face_size=35,
-                thresholds=[0.6, 0.7, 0.7],
-                post_process=False
-            )
-            logger.info("MTCNN face detector initialized successfully.")
-        except Exception as e:
-            logger.warning(f"MTCNN initialization note: {e}")
-            self.mtcnn = None
+    @property
+    def model(self):
+        if self._model is None:
+            try:
+                import gc
+                gc.collect()
+                logger.info("Loading FaceNet InceptionResnetV1 model (lazy on-demand)...")
+                self._model = InceptionResnetV1(pretrained='vggface2').eval().to(self.device)
+                gc.collect()
+                logger.info("FaceNet InceptionResnetV1 model loaded successfully.")
+            except Exception as e:
+                logger.error(f"Failed to load FaceNet model: {e}")
+                self._model = None
+        return self._model
+
+    @property
+    def mtcnn(self):
+        if self._mtcnn is None:
+            try:
+                import gc
+                gc.collect()
+                logger.info("Initializing MTCNN face detector (lazy on-demand)...")
+                self._mtcnn = MTCNN(
+                    keep_all=True,
+                    device=self.device,
+                    min_face_size=35,
+                    thresholds=[0.6, 0.7, 0.7],
+                    post_process=False
+                )
+                gc.collect()
+                logger.info("MTCNN face detector initialized successfully.")
+            except Exception as e:
+                logger.warning(f"MTCNN initialization note: {e}")
+                self._mtcnn = None
+        return self._mtcnn
 
         # Transform pipeline for cropped face to InceptionResnetV1 input (160x160 normalized tensor)
         self.transform = transforms.Compose([
